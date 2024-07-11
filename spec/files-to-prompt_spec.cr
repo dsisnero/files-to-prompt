@@ -1,30 +1,30 @@
 require "./spec_helper"
 
-  def create_tempfile(filename, content)
-    tempfile = File.tempfile(filename)
-    tempfile.write(content)
-    tempfile.close
-    tempfile.path
-  end
+def create_tempfile(filename, content)
+  tempfile = File.tempfile(filename)
+  tempfile.write(content)
+  tempfile.close
+  tempfile.path
+end
 
 def capture_output(args)
-    output = IO::Memory.new
-    error = IO::Memory.new
-    original_stdout = STDOUT
-    original_stderr = STDERR
+  output = IO::Memory.new
+  error = IO::Memory.new
+  original_stdout = STDOUT
+  original_stderr = STDERR
 
-    STDOUT.reopen(output)
-    STDERR.reopen(error)
+  STDOUT.reopen(output)
+  STDERR.reopen(error)
 
-    begin
-      FilesToPrompt::App.new.run(args)
-    ensure
-      STDOUT.reopen(original_stdout)
-      STDERR.reopen(original_stderr)
-    end
-
-    {output: output.to_s, error: error.to_s}
+  begin
+    FilesToPrompt::App.new.run(args)
+  ensure
+    STDOUT.reopen(original_stdout)
+    STDERR.reopen(original_stderr)
   end
+
+  {output: output.to_s, error: error.to_s}
+end
 
 describe "files-to-prompt" do
   # Helper function to create a temporary file with content
@@ -162,18 +162,18 @@ describe "files-to-prompt" do
 
         Dir.mktmpdir do |dir|
           ipynb_content = JSON.build do |json|
-             json.object do
-               json.field "cells" ,
-                  json.array do 
-                    json.object do
-                     json.field "celltype", "markdown"
-                     json.field "source",
-                        json.array do 
-                          json.string "# This is a markdown header"
-                        end
-                   end
-                 end
+            json.object do
+              json.field "cells",
+                json.array do
+                json.object do
+                  json.field "celltype", "markdown"
+                  json.field "source",
+                    json.array do
+                    json.string "# This is a markdown header"
+                  end
+                end
               end
+            end
           end.to_s
           create_tempfile(File.join(dir, "notebook.ipynb"), ipynb_content)
 
@@ -186,20 +186,20 @@ describe "files-to-prompt" do
 
       it "outputs an error message if nbconvert is not found" do
         Dir.mktmpdir do |dir|
-          ipynb_content = JSON.build do |json| 
-            json.object do 
-              json.field "cells", 
+          ipynb_content = JSON.build do |json|
+            json.object do
+              json.field "cells",
                 json.array do
-                  json.object do
-                    json.field "cell_type", "markdown"
-                    json.field "source",
-                      json.array do 
-                        json.string "# This is a markdown header"
-                      end
+                json.object do
+                  json.field "cell_type", "markdown"
+                  json.field "source",
+                    json.array do
+                    json.string "# This is a markdown header"
                   end
+                end
               end
-           end
-        end.to_s
+            end
+          end.to_s
           create_tempfile(File.join(dir, "notebook.ipynb"), ipynb_content)
 
           output, error = capture_output([dir, "-n", "nonexistent_nbconvert", "-f", "markdown"]).values
