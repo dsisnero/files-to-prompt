@@ -1,0 +1,13 @@
+name: files-to-prompt
+version: 0.1.0
+
+authors:
+  - dsisnero <dsisnero@gmail.com>
+
+targets:
+  files-to-prompt:
+    main: src/files-to-prompt.cr
+
+crystal: '>= 1.12.1'
+
+license: MIT
